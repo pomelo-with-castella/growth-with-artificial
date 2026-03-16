@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI News Dashboard - 莫兰迪蓝色系</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <div class="logo-text">
+                        <h1>AI Insight Pro</h1>
+                        <p class="tagline">Intelligent Analysis Platform for AI Industry Trends</p>
+                    </div>
+                </div>
+                <div class="header-features">
+                    <div class="feature">
+                        <i class="fas fa-bolt"></i>
+                        <span>Real-time Tracking</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Trend Analysis</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-tags"></i>
+                        <span>Smart Tagging</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Business Insights</span>
+                    </div>
+                </div>
+            </div>
+            <div class="date-info">
+                <div class="date-left">
+                    <p><i class="fas fa-sync-alt"></i> Last updated: <span id="current-date">March 14, 2026</span></p>
+                    <p class="source"><i class="fas fa-database"></i> Data sources: 36kr.com, TechCrunch</p>
+                </div>
+                <div class="header-stats">
+                    <div class="stat">
+                        <span class="stat-number" id="total-news">150+</span>
+                        <span class="stat-label">AI News</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" id="source-count">2</span>
+                        <span class="stat-label">Sources</span>
+                    </div>
+                    <button id="refresh-dashboard" class="refresh-btn">
+                        <i class="fas fa-rotate-right"></i>
+                        Refresh Now
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="left-panel">
+                <div class="search-filter-section">
+                    <div class="filter-controls">
+                        <div class="filter-group">
+                            <label><i class="fas fa-globe"></i> 地域频道切换</label>
+                            <div class="filter-buttons region-tabs">
+                                <!-- 默认高亮“国外 / 海外” -->
+                                <button class="filter-btn active" data-filter="region" data-value="海外">🌎 国外 · 海外前沿</button>
+                                <button class="filter-btn" data-filter="region" data-value="国内">🇨🇳 国内 · 本土落地</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeframe-selector">
+                    <button class="timeframe-btn active" data-timeframe="today">Today</button>
+                    <button class="timeframe-btn" data-timeframe="yesterday">Yesterday</button>
+                    <button class="timeframe-btn" data-timeframe="week">Past Week</button>
+                    <button class="timeframe-btn" data-timeframe="month">Past Month</button>
+                </div>
+
+                <div class="news-timeline">
+                    <div class="timeline-section active" id="today-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-calendar-day"></i>
+                            Today
+                        </h2>
+                        <div class="news-list">
+                            <!-- Today's news will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="timeline-section" id="yesterday-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Yesterday
+                        </h2>
+                        <div class="news-list">
+                            <!-- Yesterday's news will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="timeline-section" id="week-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-calendar-week"></i>
+                            Past Week
+                        </h2>
+                        <div class="news-list">
+                            <!-- Past week's news will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="timeline-section" id="month-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-calendar"></i>
+                            Past Month
+                        </h2>
+                        <div class="news-list">
+                            <!-- Past month's news will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="summary-section">
+                    <div class="summary-header">
+                        <h2 class="summary-title">
+                            <i class="fas fa-chart-line"></i>
+                            AI Trends Analysis
+                        </h2>
+                    </div>
+                    <div class="analysis-content">
+                        <div class="professional-analysis" id="dynamic-analysis">
+                            <div class="analysis-section">
+                                <h3><i class="fas fa-box"></i> 产品形态演变</h3>
+                                <div class="analysis-item">
+                                    <p><strong>从通用大模型向垂直领域Agent迁移：</strong>AI产品形态正从"全能型"基础模型向"专业型"智能体转变。以Nyne的上下文感知Agent、腾讯"龙虾"AI助理为代表，产品设计更强调对特定行业工作流的深度理解与自动化，而非单纯的对话能力。</p>
+                                </div>
+                            </div>
+
+                            <div class="analysis-section">
+                                <h3><i class="fas fa-bullseye"></i> 商业重心</h3>
+                                <div class="analysis-item">
+                                    <p><strong>ToB商业化与降本增效成为核心：</strong>当前AI新闻中超过60%涉及企业级应用。美团建设"物理世界AI底座"、Meta推迟发布性能不足的模型，均显示市场从技术炫技转向实际商业价值。投资流向明确指向：企业服务（40%）、垂直应用（25%）、基础设施（20%）。</p>
+                                </div>
+                            </div>
+
+                            <div class="analysis-section">
+                                <h3><i class="fas fa-microchip"></i> 能力迭代突破点</h3>
+                                <div class="analysis-item">
+                                    <p><strong>三大技术主线并行：</strong>1) <strong>多模态推理能力</strong>（GPT-5的Chain-of-Thought跨文本/图像/音频）；2) <strong>幻觉控制与事实性提升</strong>（Google Gemini Pro 2.0幻觉减少40%）；3) <strong>小样本具身智能</strong>（仝人智能的小样本立体视觉精准识别，无需海量训练数据）。技术演进从"规模竞赛"转向"精度与效率平衡"。</p>
+                                </div>
+                            </div>
+
+                            <div class="analysis-section">
+                                <h3><i class="fas fa-chess-queen"></i> 战略判断与启示</h3>
+                                <div class="analysis-item strategic-judgment">
+                                    <h4>未来3个月趋势预测：</h4>
+                                    <ul>
+                                        <li><strong>监管加速落地：</strong>欧盟AI责任指令、美国芯片出口管制撤回，显示全球监管框架正快速成型，合规成本将成为准入门槛。</li>
+                                        <li><strong>算力资源分化：</strong>上海10亿算力券政策将加剧区域算力竞争，中小厂商可能面临"用不起、买不到"困境。</li>
+                                        <li><strong>应用层整合潮：</strong>如同魅族转向AI软件，未来3个月将有更多硬件厂商通过并购或转型切入AI应用层。</li>
+                                    </ul>
+
+                                    <h4>对腾讯金融科技(FiT)的借鉴启示：</h4>
+                                    <div class="fit-insight">
+                                        <p><strong>支付场景：</strong>借鉴美团"物理世界AI底座"思路，将微信支付从交易工具升级为"商业智能体"。通过AI实时分析商户经营数据，提供自动化库存管理、现金流预测、客户洞察服务，打造支付+AI增值服务闭环。</p>
+                                        <p><strong>风控体系：</strong>应用Google的幻觉控制技术，提升反欺诈模型的准确性与可解释性。建立"可审计AI风控"框架，满足日益严格的金融监管要求，同时降低误报率。</p>
+                                        <p><strong>理财服务：</strong>参考垂直Agent模式，开发"智能理财顾问Agent"，深度理解用户风险偏好、财务状况，提供个性化资产配置建议，超越现有标准化产品推荐。</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="analysis-footer">
+                                <p><i class="fas fa-user-tie"></i> <strong>分析视角：</strong>腾讯金融科技(FiT)高级商业分析师 | 基于今日36kr.com与TechCrunch实时数据</p>
+                                <p><i class="fas fa-calendar-alt"></i> <strong>分析周期：</strong>2026年3月14日 | 动态更新频率：每日8:00 AM UTC</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="update-section">
+                    <h3><i class="fas fa-sync-alt"></i> Update Schedule</h3>
+                    <div class="update-info">
+                        <p><i class="fas fa-clock"></i> <strong>Daily:</strong> 8:00 AM UTC (36kr.com and TechCrunch RSS fetch)</p>
+                        <p><i class="fas fa-search"></i> <strong>Weekly:</strong> Trend analysis refresh (Monday AM)</p>
+                        <p><i class="fas fa-calendar-check"></i> <strong>Monthly:</strong> Comprehensive report (1st of month)</p>
+                        <div class="note">
+                            <p><i class="fas fa-lightbulb"></i> <strong>Note:</strong> This dashboard is a prototype. Production version would integrate automated news aggregation from multiple sources.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>AI Insight Pro &copy; 2026 | 智能AI产业分析平台 | 实时追踪 · 趋势分析 · 商业洞察</p>
+            <p class="footer-tagline">每天为您提供最前沿的AI产业动态与商业分析</p>
+            <p class="footer-links">
+                <a href="#"><i class="fas fa-database"></i> 数据源</a>
+                <a href="#"><i class="fas fa-chart-line"></i> 分析报告</a>
+                <a href="#"><i class="fas fa-envelope"></i> 订阅简报</a>
+                <a href="#"><i class="fas fa-question-circle"></i> 使用帮助</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+
+    <!-- Refresh loading modal -->
+    <div id="refresh-modal" class="refresh-modal" aria-hidden="true">
+        <div class="refresh-modal-card" role="dialog" aria-modal="true" aria-labelledby="refresh-modal-title">
+            <div class="refresh-spinner" aria-hidden="true"></div>
+            <div class="refresh-modal-content">
+                <div id="refresh-modal-title" class="refresh-modal-title">正在检索并生成最新内容…</div>
+                <div class="refresh-modal-subtitle">将抓取 36kr / TechCrunch，并调用模型生成洞察与趋势分析，请稍候。</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

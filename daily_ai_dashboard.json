@@ -1,0 +1,541 @@
+{
+  "generatedAt": "2026-03-16T07:10:21.875Z",
+  "newsBuckets": {
+    "today": [
+      {
+        "id": 1000,
+        "title": "The billionaires made a promise — now some want out",
+        "summary": "In 2010, Warren Buffett and Bill Gates launched a disarmingly simple campaign they called the Giving Pledge: a public commitment, open to the world&#8217;s wealthiest people, to give away more than half their fortune during their lifetime or upon their death. ...",
+        "insight": "巴菲特与盖茨发起的“捐赠誓言”面临部分签署者退出，动摇了顶级富豪慈善承诺的稳定性。这对依赖大额捐赠的慈善机构构成资金风险，同时可能促使财富传承策略更趋多元化。",
+        "link": "https://techcrunch.com/2026/03/15/the-billionaires-made-a-promise-now-some-want-out/",
+        "date": "Mar 16, 2026",
+        "rawDate": "Mon, 16 Mar 2026 04:40:24 +0000",
+        "source": "TechCrunch",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "海外"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "中"
+        },
+        "businessScore": 79,
+        "funding": null,
+        "coreTech": "计算机视觉"
+      },
+      {
+        "id": 1001,
+        "title": "Netflix’s ‘Frankenstein’ wins three Oscars, ‘KPop Demon Hunters’ wins two",
+        "summary": "“Frankenstein” won for Best Production Design, Best Costume Design, and Best Makeup and Hairstyling, while “KPop Demon Hunters” won for Best Animated Feature and Best Original Song....",
+        "insight": "Netflix原创动画电影在奥斯卡斩获五项技术及动画类奖项。这巩固了流媒体平台在高端内容制作领域的地位，并可能吸引更多顶级创作者加入。",
+        "link": "https://techcrunch.com/2026/03/15/netflixs-frankenstein-wins-three-oscars-kpop-demon-hunters-wins-two/",
+        "date": "Mar 16, 2026",
+        "rawDate": "Mon, 16 Mar 2026 02:27:18 +0000",
+        "source": "TechCrunch",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "海外"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "中"
+        },
+        "businessScore": 90,
+        "funding": null,
+        "coreTech": "深度学习"
+      },
+      {
+        "id": 1002,
+        "title": "Google, Accel India accelerator chooses 5 startups and none are ‘AI wrappers’",
+        "summary": "Google and Accel say about 70% of AI startup pitches tied to India were \"wrappers\" as they reviewed more than 4,000 applications for their Atoms cohort....",
+        "insight": "谷歌与Accel印度加速器从超四千份申请中筛选出五家初创企业，无一为AI套壳应用。这显示风投正从表层应用转向底层技术投资，对寻求融资的AI初创企业提出了更高技术门槛要求。",
+        "link": "https://techcrunch.com/2026/03/15/google-and-accel-cut-through-wrappers-in-4000-ai-startup-pitches-to-pick-five-tied-to-india/",
+        "date": "Mar 16, 2026",
+        "rawDate": "Mon, 16 Mar 2026 00:30:00 +0000",
+        "source": "TechCrunch",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "海外"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "高"
+        },
+        "businessScore": 90,
+        "funding": null,
+        "coreTech": "计算机视觉"
+      },
+      {
+        "id": 1003,
+        "title": "Lawyer behind AI psychosis cases warns of mass casualty risks",
+        "summary": "AI chatbots have been linked to suicides for years. Now one lawyer says they are showing up in mass casualty cases too, and the technology is moving faster than the safeguards....",
+        "insight": "AI聊天机器人已从个体自杀事件关联至大规模伤亡案件，显示其危害正加速扩散。这警示AI开发与监管方需紧急强化安全护栏，以规避法律与伦理风险。",
+        "link": "https://techcrunch.com/2026/03/15/lawyer-behind-ai-psychosis-cases-warns-of-mass-casualty-risks/",
+        "date": "Mar 16, 2026",
+        "rawDate": "Sun, 15 Mar 2026 18:49:32 +0000",
+        "source": "TechCrunch",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "海外"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "高"
+        },
+        "businessScore": 78,
+        "funding": null,
+        "coreTech": "强化学习"
+      },
+      {
+        "id": 1004,
+        "title": "TechCrunch Mobility: Travis Kalanick’s return proves it really is 2016 again",
+        "summary": "Welcome back to TechCrunch Mobility — your central hub for news and insights on the future of transportation....",
+        "insight": "Travis Kalanick重返其创立的货运经纪公司CloudKitchens，标志着创始人在公司发展关键阶段的强势回归。此举为面临增长压力的初创企业提供了创始人重新掌舵以扭转局面的参考案例，同时也对现有管理团队构成潜在挑战。",
+        "link": "https://techcrunch.com/2026/03/15/techcrunch-mobility-travis-kalanicks-return-proves-it-really-is-2016-again/",
+        "date": "Mar 16, 2026",
+        "rawDate": "Sun, 15 Mar 2026 16:05:00 +0000",
+        "source": "TechCrunch",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "海外"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "低"
+        },
+        "businessScore": 86,
+        "funding": null,
+        "coreTech": "神经网络"
+      },
+      {
+        "id": 2000,
+        "title": "补齐AI板块核心拼图，网络基建「卖铲人」飞速创新登陆港交所",
+        "summary": "继2025年港交所重现“IPO大年”（全年117家公司上市，募资总额达2869亿港元，同比大增200%）之后，2026年的港股上市潮仍在强势延续年内已有28家企业成功IPO，募资总额逼近千亿大关。 值得注意的是，今年港股IPO的含“AI”量极高。不仅有MiniMax、智谱等大模型独角兽接连登陆，壁仞科技、天数智芯等算力巨头也相继入局。而在3月13日，港股AI资产池再添核心资产——“面向全球市场的企业网络解决方案第一股”飞速创新顺利通过港交所聆讯，为火热的AI板块补齐了至关重要的“网络基建”拼图。 AI时代的底层基建...",
+        "insight": "飞速创新作为企业网络解决方案商登陆港交所，补齐了AI板块的网络基建拼图。此举为AI产业链的算力与模型公司提供了关键的网络基础设施支撑，降低了其规模化部署的潜在瓶颈风险。",
+        "link": "https://36kr.com/p/3725233182062982?f=rss",
+        "date": "Mar 16, 2026",
+        "rawDate": "2026-03-16 14:24:43  +0800",
+        "source": "36kr.com",
+        "tags": {
+          "domain": [
+            "大模型",
+            "AI安全"
+          ],
+          "region": [
+            "国内"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "中"
+        },
+        "businessScore": 94,
+        "funding": null,
+        "coreTech": "深度学习"
+      },
+      {
+        "id": 2001,
+        "title": "车规级碳化硅模块厂商再融资亿元，加速入局AI算力中心基建 | 硬氪首发",
+        "summary": "作者&nbsp;|&nbsp;乔钰杰 编辑&nbsp;|&nbsp;袁斯来 硬氪获悉，高性能SiC（碳化硅）模块厂家无锡利普思半导体有限公司（下称“利普思”）近日完成亿元PreB+轮融资，新投资方为扬州国金、扬州龙投资本。资金将主要用于公司在扬州布局专业化车规级SiC（碳化硅）模块封装测试基地和市场推广。 利普思成立于2019年，是一家专注于第三代功率半导体SiC模块设计、生产与销售的硬科技企业。 功率半导体是控制电能转换的核心器件。与传统IGBT模块相比，SiC模块具有更高耐压、更低损耗和更高开关频率等优势，在新...",
+        "insight": "车规级碳化硅模块厂商获亿元融资，将建设封装测试基地并拓展市场。该融资表明，AI算力中心的高能耗需求正为上游功率半导体厂商开辟新的增长赛道。",
+        "link": "https://36kr.com/p/3725161156639368?f=rss",
+        "date": "Mar 16, 2026",
+        "rawDate": "2026-03-16 13:11:09  +0800",
+        "source": "36kr.com",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "国内"
+          ],
+          "type": [
+            "融资"
+          ],
+          "importance": "中"
+        },
+        "businessScore": 78,
+        "funding": null,
+        "coreTech": "强化学习"
+      },
+      {
+        "id": 2002,
+        "title": "《直播电商消费者满意度调查报告（2026）》发布，消费者呼吁强化源头治理",
+        "summary": "3月14日，中新经纬研究院、天津市消费者协会、北京大学电子商务法研究中心、北京阳光消费大数据研究院、消费者网联合发布《直播电商消费者满意度调查报告（2026）》。 《报告》指出，直播电商已成为主流消费渠道。在消费品类方面，美妆、食品、家居位列前三。直播电商最突出的问题中，消费者选择“商品假冒伪劣或以次充好”“价格不透明或虚假促销”“虚假宣传或夸大功效”占比分别为49.27%、39.18%、35.80%。 直播电商成为主流消费渠道 根据《报告》，当前，直播电商用户渗透率达99.63%，消费行为呈现高频、刚需特征。其中...",
+        "insight": "直播电商消费者满意度报告揭示假冒伪劣、价格不透明等是当前最突出问题。这要求平台与品牌方强化供应链治理，以规避信任风险并巩固市场地位。",
+        "link": "https://36kr.com/p/3724972796361096?f=rss",
+        "date": "Mar 16, 2026",
+        "rawDate": "2026-03-16 10:02:08  +0800",
+        "source": "36kr.com",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "国内"
+          ],
+          "type": [
+            "产品发布"
+          ],
+          "importance": "低"
+        },
+        "businessScore": 83,
+        "funding": null,
+        "coreTech": "生成模型"
+      },
+      {
+        "id": 2003,
+        "title": "两位清华校友创业：获谷歌、英伟达系投资人押注，要把机器人数据采集成本降50倍丨36氪首发",
+        "summary": "作者丨欧雪 编辑丨袁斯来 硬氪获悉，面向机器人与空间智能领域的数据基础设施服务商——Ropedia完成了千万美金级种子轮融资。本轮融资由多位来自谷歌，英伟达，亚马逊的北美天使投资人和亚洲头部美元基金联合投资，深渡资本担任长期独家财务顾问。资金将主要用于核心技术团队扩建、现有产品量产交付，以及市场的持续拓展。 Ropedia于2025年下半年在新加坡成立，致力于为机器人、空间、物理智能等领域提供新一代数据采集与解决方案。 Ropedia由三位联合创始人创立：CEO陈昭熹博士（清华大学本科，南洋理工大学博士，曾在Met...",
+        "insight": "Ropedia获千万美元级种子轮融资，投资方含谷歌英伟达系投资人。该融资将降低机器人数据采集成本，为机器人产业链下游集成商与应用方带来显著的降本增效机会。",
+        "link": "https://36kr.com/p/3724929366571399?f=rss",
+        "date": "Mar 16, 2026",
+        "rawDate": "2026-03-16 09:14:28  +0800",
+        "source": "36kr.com",
+        "tags": {
+          "domain": [
+            "多模态"
+          ],
+          "region": [
+            "国内"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "中"
+        },
+        "businessScore": 74,
+        "funding": null,
+        "coreTech": "计算机视觉"
+      },
+      {
+        "id": 2004,
+        "title": "8点1氪丨知名连锁店被曝大规模销售假烟，已查获非法卷烟139.99万支；“3·15晚会”曝光完整名单公布；Kimi估值涨至180亿美元",
+        "summary": "今日热点导览 于东来最新回应胖东来“40亿资产分配” 周鸿祎向母校西安交通大学捐赠1亿元 河南首家人形机器人4S店开业，租赁业务火热 Meta被曝计划裁员20%甚至更多 比亚迪正在评估入局F1 TOP3大新闻 美宜佳总部回应多地门店卖假烟，广东省烟草专卖局已查获美宜佳门店非法卷烟139.99万支 3月14日，大量网友反映在美宜佳便利店买到了“假烟”。美宜家总部客服告诉记者，总部已经在积极跟进此事，“目前的话已经在对全国4万家门店进行“拉网式”排查，如果发现有问题的门店会立即停业处理。”针对于被曝售卖假烟的门店，客服...",
+        "insight": "知名连锁便利店美宜佳被查获大规模销售假烟，引发全国门店排查。此事警示连锁零售品牌需强化加盟商品控，否则将严重损害品牌信誉与消费者信任。",
+        "link": "https://36kr.com/p/3724860285319556?f=rss",
+        "date": "Mar 16, 2026",
+        "rawDate": "2026-03-16 08:07:10  +0800",
+        "source": "36kr.com",
+        "tags": {
+          "domain": [
+            "大模型",
+            "AI安全"
+          ],
+          "region": [
+            "国内"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "低"
+        },
+        "businessScore": 90,
+        "funding": null,
+        "coreTech": "深度学习"
+      },
+      {
+        "id": 2007,
+        "title": "蚂蚁灵波与乐聚机器人签署战略合作协议",
+        "summary": "36氪获悉，3月16日，上海蚂蚁灵波科技有限公司与乐聚智能（深圳）股份有限公司正式签署战略合作协议。双方将依托蚂蚁灵波在具身大模型方面的技术能力与乐聚在本体、数据、场景方面的深厚积累，构建高价值具身智能真机数据集，开展模型训练、优化迭代与本体适配，持续提升机器人“感知、理解、决策、执行、学习”全链路能力。...",
+        "insight": "蚂蚁灵波与乐聚机器人达成战略合作，旨在结合具身大模型与机器人本体技术。此次合作将加速具身智能的产业化落地，为机器人公司提供更优的解决方案并提升产品竞争力。",
+        "link": "https://36kr.com/newsflashes/3725237284092552?f=rss",
+        "date": "Mar 16, 2026",
+        "rawDate": "2026-03-16 14:27:19  +0800",
+        "source": "36kr.com",
+        "tags": {
+          "domain": [
+            "大模型"
+          ],
+          "region": [
+            "国内"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "中"
+        },
+        "businessScore": 77,
+        "funding": null,
+        "coreTech": "计算机视觉"
+      },
+      {
+        "id": 2008,
+        "title": "三星：预计内存短缺将在2028年结束",
+        "summary": "全球存储行业正处于人工智能需求爆发的超级周期中，然而，随着时间推移，以三星电子和SK海力士为代表的主要存储生产商正在重新审视市场供需平衡，并采取了更加谨慎的扩张策略。有报道指出，三星预计内存短缺将在2028年结束，这意味着该公司需要根据需求预测来调整产能计划，避免过度扩张。SK海力士此前也表示，他们在扩大产能方面将保持谨慎。（财联社）...",
+        "insight": "三星预计由AI驱动的内存短缺将在2028年结束。这要求存储制造商审慎规划产能，避免周期下行风险，并为下游AI算力供应商提供了明确的供应链稳定预期。",
+        "link": "https://36kr.com/newsflashes/3725206154901889?f=rss",
+        "date": "Mar 16, 2026",
+        "rawDate": "2026-03-16 13:55:39  +0800",
+        "source": "36kr.com",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "国内"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "低"
+        },
+        "businessScore": 77,
+        "funding": null,
+        "coreTech": "生成模型"
+      },
+      {
+        "id": 2009,
+        "title": "外媒：阿里巴巴即将推出企业级AI旗舰应用",
+        "summary": "3月16日，据外媒报道，阿里巴巴最快于本周推出全新的企业级AI Agent应用。该应用由钉钉团队开发，旨在提供比OpenClaw更强大的Agent能力，不仅能协助企业自动操作电脑、浏览器和云服务器，还内置了专门的安全功能以保障企业数据隐私。未来，阿里还计划在这一产品中逐步接入淘宝、支付宝等B端商业能力。...",
+        "insight": "阿里巴巴即将推出集成钉钉、淘宝及支付宝能力的企业级AI Agent应用。此举将为企业客户提供更安全高效的自动化工具，并可能重塑国内企业服务市场的竞争格局。",
+        "link": "https://36kr.com/newsflashes/3725181323246212?f=rss",
+        "date": "Mar 16, 2026",
+        "rawDate": "2026-03-16 13:30:24  +0800",
+        "source": "36kr.com",
+        "tags": {
+          "domain": [
+            "Agent",
+            "AI安全"
+          ],
+          "region": [
+            "国内"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "中"
+        },
+        "businessScore": 74,
+        "funding": null,
+        "coreTech": "计算机视觉"
+      }
+    ],
+    "yesterday": [
+      {
+        "id": 1005,
+        "title": "The MacBook Neo is ‘the most repairable MacBook’ in years, according to iFixit",
+        "summary": "Apple’s new MacBook Neo isn’t just the most affordable MacBook — it’s also the company's most repairable laptop in “about fourteen years.\"...",
+        "insight": "苹果推出新款MacBook Neo，其可维修性创下近十四年来新高。这为第三方维修服务商和环保倡导者创造了市场机会，同时可能削弱苹果官方售后服务的营收。",
+        "link": "https://techcrunch.com/2026/03/14/the-macbook-neo-is-the-most-repairable-macbook-in-years-according-to-ifixit/",
+        "date": "Mar 15, 2026",
+        "rawDate": "Sat, 14 Mar 2026 21:24:10 +0000",
+        "source": "TechCrunch",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "海外"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "中"
+        },
+        "businessScore": 71,
+        "funding": null,
+        "coreTech": "多模态学习"
+      },
+      {
+        "id": 1006,
+        "title": "Meta reportedly considering layoffs that could affect 20% of the company",
+        "summary": "These layoffs could help Facebook's parent company offset its aggressive spending on AI infrastructure, as well as AI-related acquisitions and hiring....",
+        "insight": "Meta考虑裁员以削减成本，为AI基础设施等战略投入腾出资源。此举将优化其财务结构，使公司能更专注地投资于AI等长期增长领域，但对被波及的员工和依赖其生态的开发者构成短期风险。",
+        "link": "https://techcrunch.com/2026/03/14/meta-reportedly-considering-layoffs-that-could-affect-20-of-the-company/",
+        "date": "Mar 15, 2026",
+        "rawDate": "Sat, 14 Mar 2026 16:28:42 +0000",
+        "source": "TechCrunch",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "海外"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "高"
+        },
+        "businessScore": 88,
+        "funding": null,
+        "coreTech": "计算机视觉"
+      },
+      {
+        "id": 2005,
+        "title": "工业级AI视频厂商再融资，掌握120TB独家数据，营收破亿 | 硬氪首发",
+        "summary": "作者&nbsp;|&nbsp;乔钰杰 编辑&nbsp;|&nbsp;袁斯来 硬氪获悉，重庆达瓦合志影像科技有限公司（下称“达瓦科技”）宣布完成近亿元的新一轮融资。本轮融资由一村资本、宝捷会创新基金领投，老股东启赋资本、重庆永川国资平台持续跟投。 达瓦科技成立于2023年，总部位于重庆，是国内首个实现商业化闭环的专业级AI内容创作平台，并打通“生产+交易+履约”全链条的视频AI生态。2025年，达瓦科技营收突破亿元，三年复合增长率近300%，AI平台实现规模化收入。 达瓦科技的核心壁垒，建立在极其稀缺的120TB独家...",
+        "insight": "工业级AI视频平台达瓦科技完成近亿元融资，营收破亿且三年复合增长率近300%。其掌握的120TB独家数据与全链条生态，为AI视频工具商构筑了数据与商业化的双重壁垒。",
+        "link": "https://36kr.com/p/3723669408987782?f=rss",
+        "date": "Mar 15, 2026",
+        "rawDate": "2026-03-15 11:53:57  +0800",
+        "source": "36kr.com",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "国内"
+          ],
+          "type": [
+            "融资"
+          ],
+          "importance": "高"
+        },
+        "businessScore": 78,
+        "funding": null,
+        "coreTech": "深度学习"
+      },
+      {
+        "id": 2006,
+        "title": "AWE首秀亮王牌：慕思，凭什么让一众科技大佬集体“躺平”？",
+        "summary": "智能家居发展十余年，各类智能单品早已走进千家万户，但一个困局却始终未能突破：单品“智能化”多流于表面，且彼此孤立，难以串联成一个真正懂生活、主动服务人真实需求的“智能之家”。 比如用于交流的语音助手，虽能随叫随应，但也会成为某一刻的噪音；又如守护安全的摄像头，并不能感知被褥之下人体的真实状态；即便是可掌控全屋智能的手机，却也不是24小时被人贴身操控。 “全域协同”、“主动服务”、“无感存在”至今仍是智能家居难以破解的重要问题。 而今，作为硬件智能家居的年度风向标，AWE2026将AI融合下的科技，投向硬件智能与家居...",
+        "insight": "慕思在AWE展示其AI驱动的主动健康睡眠解决方案，引发行业关注。该方案为智能家居企业提供了从单品智能迈向“无感服务”与“主动健康”场景落地的关键路径。",
+        "link": "https://36kr.com/p/3722669939931524?f=rss",
+        "date": "Mar 15, 2026",
+        "rawDate": "2026-03-15 10:00:50  +0800",
+        "source": "36kr.com",
+        "tags": {
+          "domain": [
+            "AI安全"
+          ],
+          "region": [
+            "国内"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "高"
+        },
+        "businessScore": 85,
+        "funding": null,
+        "coreTech": "深度学习"
+      }
+    ],
+    "week": [
+      {
+        "id": 1007,
+        "title": "‘Not built right the first time’ — Musk’s xAI is starting over again, again",
+        "summary": "The AI lab is revamping its effort to build an AI coding tool, with two new executives joining from Cursor....",
+        "insight": "马斯克的xAI团队正重新开发其AI编程工具，并引入两名新高管。此举为AI编程助手领域的初创公司带来竞争压力，也凸显了该赛道技术迭代的快速与不确定性。",
+        "link": "https://techcrunch.com/2026/03/13/not-built-right-the-first-time-musks-xai-is-starting-over-again-again/",
+        "date": "Mar 14, 2026",
+        "rawDate": "Sat, 14 Mar 2026 00:12:22 +0000",
+        "source": "TechCrunch",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "海外"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "低"
+        },
+        "businessScore": 73,
+        "funding": null,
+        "coreTech": "自然语言处理"
+      },
+      {
+        "id": 1008,
+        "title": "Digg lays off staff and shuts down app as company retools",
+        "summary": "Digg laid off a significant number of staff and shut down its app, but says it's not giving up on the startup....",
+        "insight": "Digg大幅裁员并关闭应用，以调整公司业务方向。此举为新兴社交内容平台创造了市场填补机会，同时警示传统聚合类媒体需加速转型。",
+        "link": "https://techcrunch.com/2026/03/13/digg-lays-off-staff-and-shuts-down-app-as-company-retools/",
+        "date": "Mar 14, 2026",
+        "rawDate": "Fri, 13 Mar 2026 21:51:17 +0000",
+        "source": "TechCrunch",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "海外"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "中"
+        },
+        "businessScore": 77,
+        "funding": null,
+        "coreTech": "深度学习"
+      },
+      {
+        "id": 1009,
+        "title": "Nyne, founded by a father-son duo, gives AI agents the human context they’re missing",
+        "summary": "The data infrastructure startup raised $5.3 million in seed funding led by Wischoff Ventures and South Park Commons....",
+        "insight": "父子创立的Nyne为AI智能体注入缺失的人类情境数据，完成530万美元种子轮融资。此举为下游AI应用开发商提供了提升智能体拟人化与实用性的关键工具，降低了复杂场景的研发门槛。",
+        "link": "https://techcrunch.com/2026/03/13/nyne-founded-by-a-father-son-duo-gives-ai-agents-the-human-context-theyre-missing/",
+        "date": "Mar 14, 2026",
+        "rawDate": "Fri, 13 Mar 2026 21:37:01 +0000",
+        "source": "TechCrunch",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "海外"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "低"
+        },
+        "businessScore": 94,
+        "funding": null,
+        "coreTech": "多模态学习"
+      },
+      {
+        "id": 1010,
+        "title": "Steven Spielberg says he’s ‘never used AI’ in any of his films",
+        "summary": "At SXSW, Steven Spielberg said AI has uses in many fields, but not when it comes to replacing creative people in film and TV writing....",
+        "insight": "斯皮尔伯格公开声明其电影创作从未使用AI技术。这为坚持传统工艺的创作者提供了品牌差异化机会，但可能使依赖AI降本增效的制片方面临舆论压力。",
+        "link": "https://techcrunch.com/2026/03/13/steven-spielberg-says-hes-never-used-ai-in-any-of-his-films/",
+        "date": "Mar 14, 2026",
+        "rawDate": "Fri, 13 Mar 2026 19:47:58 +0000",
+        "source": "TechCrunch",
+        "tags": {
+          "domain": [
+            "其他"
+          ],
+          "region": [
+            "海外"
+          ],
+          "type": [
+            "新闻"
+          ],
+          "importance": "高"
+        },
+        "businessScore": 72,
+        "funding": null,
+        "coreTech": "神经网络"
+      }
+    ],
+    "month": []
+  },
+  "analysisHtml": "<div class=\"analysis-section\">\n  <h3>产品形态演变：从通用到垂直与智能体</h3>\n  <div class=\"analysis-item\">\n    <ul>\n      <li><strong>一句话核心结论：</strong>AI产品正从通用模型快速向垂直场景和AI Agent演进。</li>\n      <li>Nyne等公司致力于为AI Agent注入人类上下文，解决其落地关键瓶颈。</li>\n      <li>对创业公司：意味着“AI Wrapper”式应用吸引力下降，拥有垂直数据与场景理解的产品更受资本青睐。</li>\n    </ul>\n  </div>\n</div>\n<div class=\"analysis-section\">\n  <h3>商业重心：ToB基建与行业落地为王</h3>\n  <div class=\"analysis-item\">\n    <ul>\n      <li><strong>一句话核心结论：</strong>商业重心明确偏向ToB，尤其是支撑AI的底层基建与行业解决方案。</li>\n      <li>国内“网络基建卖铲人”上市、碳化硅模块厂商融资入局算力中心，凸显产业链上游热度。</li>\n      <li>对投资者与厂商：算力、数据、行业Know-how成为核心投资逻辑，纯模型层竞争门槛抬高。</li>\n    </ul>\n  </div>\n</div>\n<div class=\"analysis-section\">\n  <h3>能力迭代主线：算力、数据与安全并重</h3>\n  <div class=\"analysis-item\">\n    <ul>\n      <li><strong>一句话核心结论：</strong>能力迭代围绕算力效率、专属数据资产与AI安全风险展开。</li>\n      <li>工业级AI视频厂商凭120TB独家数据获融资；律师警告AI致精神问题案件凸显安全风险。</li>\n      <li>对企业客户：拥有高质量垂直数据护城河至关重要，同时需提前评估部署AI的潜在法律与伦理风险。</li>\n    </ul>\n  </div>\n</div>\n<div class=\"analysis-section\">\n  <h3>综合判断：短期趋势、机会与风险</h3>\n  <div class=\"analysis-item\">\n    <ul>\n      <li><strong>一句话核心结论：</strong>未来1-3个月是垂直场景落地验证期，算力焦虑与监管风险并存。</li>\n      <li>趋势：阿里巴巴等巨头将推出企业级AI应用，加速行业渗透；内存短缺预期持续至2028年。</li>\n      <li>机会：AI+机器人、工业视觉等硬科技结合领域；风险：技术路线反复（如xAI重启）、应用不当引发的社会与法律争议。</li>\n    </ul>\n  </div>\n</div>"
+}
