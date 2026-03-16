@@ -209,9 +209,10 @@
         </footer>
     </div>
 
-    <!-- If deployed (e.g., GitHub Pages), set backend origin here:
-         <script>window.__DASHBOARD_BACKEND__ = "https://growth-with-artificial.onrender.com";</script>
-    -->
+    <script>
+        // 线上前端（Vercel/GitHub Pages）调用 Render 后端 API 的地址
+        window.__DASHBOARD_BACKEND__ = "https://growth-with-artificial.onrender.com";
+    </script>
     <script src="script.js"></script>
 
     <!-- Refresh loading modal -->
