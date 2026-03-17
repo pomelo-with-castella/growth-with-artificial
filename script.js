@@ -112,6 +112,36 @@ function buildRefreshIssueMessage(refreshSummary, analysisStatus, analysisError)
     return issues.join('\n');
 }
 
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitForRefreshCompletion() {
+    const timeoutMs = 6 * 60 * 1000; // 6 minutes for cold start + refresh
+    const pollMs = 2500;
+    const started = Date.now();
+
+    while (Date.now() - started < timeoutMs) {
+        const res = await fetch(`${DASHBOARD_BACKEND}/api/refresh-status?ts=${Date.now()}`, { cache: 'no-store' });
+        if (!res.ok) {
+            throw new Error(`读取刷新状态失败，status=${res.status}`);
+        }
+        const status = await res.json();
+        if (status.running) {
+            await sleep(pollMs);
+            continue;
+        }
+        if (status.status === 'succeeded') {
+            return status;
+        }
+        if (status.status === 'failed') {
+            throw new Error(`后台刷新失败：${status.lastError || '未知错误'}`);
+        }
+        await sleep(pollMs);
+    }
+    throw new Error('等待刷新结果超时，请稍后重试');
+}
+
 // 应用筛选条件
 function applyFilters(newsItems) {
     if (!newsItems) return [];
@@ -612,14 +642,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 if (refreshModal) refreshModal.setAttribute('aria-hidden', 'false');
                 try {
-                    // 1）先请求后端重新抓取 + 生成 JSON
+                    // 1）先请求后端启动后台刷新任务（202 Accepted）
                     const refreshRes = await fetch(`${DASHBOARD_BACKEND}/api/refresh-dashboard`, { method: 'POST' });
                     if (!refreshRes.ok) {
                         const errText = await refreshRes.text().catch(() => '');
                         throw new Error(`/api/refresh-dashboard 失败: ${refreshRes.status} ${errText}`);
                     }
+                    const accepted = await refreshRes.json().catch(() => ({}));
+                    if (!accepted.ok) {
+                        throw new Error(`刷新任务未被接受: ${accepted.error || '未知错误'}`);
+                    }
 
-                    // 2）然后读取最新 daily_ai_dashboard.json
+                    // 2）轮询后端刷新状态，等待后台任务完成
+                    await waitForRefreshCompletion();
+
+                    // 3）读取最新 daily_ai_dashboard.json
                     const res = await fetch(`${DASHBOARD_BACKEND}/daily_ai_dashboard.json?ts=` + Date.now(), { cache: 'no-store' });
                     if (res.ok) {
                         const data = await res.json();
