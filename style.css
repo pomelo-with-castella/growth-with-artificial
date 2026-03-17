@@ -47,9 +47,10 @@ body {
 
 .header-content {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 25px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    margin-bottom: 0;
 }
 
 .logo {
@@ -103,6 +104,155 @@ body {
     font-weight: 600;
 }
 
+/* =========================================
+   Dashboard Bar & Stats (Premium UI)
+   ========================================= */
+.dashboard-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    padding: 16px 24px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.stats-group {
+    display: flex;
+    gap: 16px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(0, 0, 0, 0.04);
+    padding: 10px 20px 10px 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    font-size: 18px;
+    color: #ffffff;
+}
+
+.news-icon { background: linear-gradient(135deg, rgba(166,177,225,0.4), rgba(166,177,225,0.1)); }
+.source-icon { background: linear-gradient(135deg, rgba(181,193,180,0.4), rgba(181,193,180,0.1)); }
+
+.stat-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-number {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1;
+    letter-spacing: -0.5px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+/* =========================================
+   Interactive Refresh Button
+   ========================================= */
+.action-group {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.last-updated {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.last-updated span {
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 500;
+}
+
+.refresh-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 99px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(5px);
+}
+
+.refresh-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.03);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+.refresh-btn:active {
+    transform: scale(0.97);
+}
+
+.refresh-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.refresh-btn i {
+    transition: transform 0.3s;
+}
+
+.refresh-btn.is-loading i {
+    animation: smoothSpin 1s linear infinite;
+}
+
+@keyframes smoothSpin { 100% { transform: rotate(360deg); } }
+
+.source-list {
+    margin-top: 0;
+    padding-left: 8px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Legacy header styles snapshot (rollback reference)
 .date-info {
     display: flex;
     justify-content: space-between;
@@ -110,29 +260,8 @@ body {
     padding-top: 15px;
     border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
-
-.date-left {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.date-left p {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 15px;
-}
-
-.date-left i {
-    color: var(--light-blue);
-}
-
-.source {
-    font-style: italic;
-    opacity: 0.8;
-}
-
+.date-left { display: flex; flex-direction: column; gap: 8px; }
+.source { font-style: italic; opacity: 0.8; }
 .header-stats {
     display: inline-flex;
     align-items: center;
@@ -141,7 +270,6 @@ body {
     background-color: rgba(0, 0, 0, 0.12);
     border-radius: 999px;
 }
-
 .stat {
     display: flex;
     flex-direction: column;
@@ -151,50 +279,7 @@ body {
     background: rgba(0, 0, 0, 0.18);
     min-width: 90px;
 }
-
-.stat-number {
-    font-size: 20px;
-    font-weight: 700;
-    color: #ffffff;
-}
-
-.stat-label {
-    font-size: 11px;
-    opacity: 0.8;
-    margin-top: 2px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.refresh-btn {
-    padding: 8px 14px;
-    border-radius: 999px;
-    border: none;
-    background-color: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    font-size: 13px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.refresh-btn i {
-    font-size: 14px;
-}
-
-.refresh-btn:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-1px);
-}
-
-.refresh-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    transform: none;
-}
+*/
 
 /* Refresh modal */
 .refresh-modal {
@@ -683,13 +768,22 @@ body {
 .filter-controls {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 14px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
 }
 
 .filter-group {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
 }
 
 .filter-group label {
@@ -698,6 +792,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    font-size: 16px;
 }
 
 .filter-buttons {
@@ -720,6 +815,7 @@ body {
     border-radius: 999px;
     background-color: transparent;
     border: none;
+    font-size: 15px;
     font-weight: 600;
     color: var(--text-secondary);
 }
@@ -729,6 +825,104 @@ body {
     color: #ffffff;
     border: none;
     box-shadow: 0 2px 6px var(--shadow);
+}
+
+/* =========================================
+   顶级大厂风：商业价值过滤器 (Segmented Filter)
+   ========================================= */
+.importance-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+}
+
+.importance-filter .filter-label {
+    font-weight: 600;
+    color: var(--dark-blue);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    letter-spacing: 0;
+}
+
+.importance-filter .filter-label i {
+    color: var(--primary-blue);
+    font-size: 14px;
+}
+
+.importance-tabs {
+    display: flex;
+    width: 100%;
+    background-color: var(--background);
+    border-radius: 999px;
+    padding: 4px;
+    gap: 4px;
+}
+
+.importance-tabs .filter-btn {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 999px;
+    background-color: transparent;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    color: #64748B;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.importance-tabs .filter-btn:hover {
+    color: #334155;
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.importance-tabs .filter-btn.active {
+    background-color: #FFFFFF;
+    color: #0F172A;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.importance-tabs .filter-btn::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    opacity: 0.4;
+}
+
+.importance-tabs .filter-btn.active::before {
+    opacity: 1;
+    box-shadow: 0 0 6px currentColor;
+}
+
+.importance-tabs .filter-btn[data-value="高"]::before {
+    background-color: #EF4444;
+    color: rgba(239, 68, 68, 0.4);
+}
+
+.importance-tabs .filter-btn[data-value="中"]::before {
+    background-color: #F59E0B;
+    color: rgba(245, 158, 11, 0.4);
+}
+
+.importance-tabs .filter-btn[data-value="低"]::before {
+    background-color: #10B981;
+    color: rgba(16, 185, 129, 0.4);
 }
 
 .filter-btn {
@@ -1122,6 +1316,10 @@ body {
         justify-content: space-around;
     }
 
+    .importance-tabs .filter-btn {
+        flex: 1;
+    }
+
     .timeframe-selector {
         justify-content: center;
     }
@@ -1264,6 +1462,17 @@ body {
     color: var(--text-primary);
 }
 
+.detail-analysis .analysis-score {
+    margin-bottom: 12px;
+    font-size: 15px;
+}
+
+.detail-analysis .analysis-text {
+    margin-top: 0;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
 .detail-link {
     display: inline-flex;
     align-items: center;
@@ -1370,6 +1579,30 @@ body {
 
 .analysis-item li strong {
     color: var(--primary-blue);
+}
+
+.analysis-empty-state {
+    padding: 16px;
+    border: 1px solid #f5c2c7;
+    background: #fff5f6;
+    border-radius: 10px;
+    color: #842029;
+}
+
+.analysis-empty-state h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.analysis-empty-state p {
+    margin: 0 0 10px 0;
+}
+
+.analysis-empty-state ul {
+    margin: 0 0 10px 18px;
 }
 
 .strategic-judgment {

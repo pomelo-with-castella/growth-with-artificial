@@ -11,12 +11,31 @@ const { parseStringPromise } = require('xml2js');
 // === 配置区域 ===
 const TECHCRUNCH_RSS = 'https://techcrunch.com/feed/';
 const KR36_RSS = 'https://www.36kr.com/feed';
+const VENTUREBEAT_AI_RSS = 'https://venturebeat.com/category/ai/feed/';
+const ZDNET_AI_RSS = 'https://www.zdnet.com/topic/artificial-intelligence/rss.xml';
+const INFOQ_CN_RSS = 'https://www.infoq.cn/feed';
+const LEIPHONE_RSS = 'https://www.leiphone.com/feed';
 
 // 使用 DeepSeek Chat 接口（兼容 OpenAI 风格）
 // 优先读取 D E E P S E E K_API_KEY，没有则回退到 OPENAI_API_KEY（方便沿用原有变量）
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || process.env.OPENAI_API_KEY || '';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/chat/completions';
 const DEEPSEEK_MODEL = 'deepseek-chat';
+const HISTORY_FILE = path.join(__dirname, 'news_history.json');
+const HISTORY_KEEP_DAYS = 30;
+const CORE_TECH_TERMS = [
+  '大语言模型',
+  '多模态',
+  '智能体',
+  '检索增强生成(RAG)',
+  '计算机视觉',
+  '语音与音频',
+  '推荐系统',
+  'AI基础设施',
+  'AI安全与对齐',
+  '具身智能/机器人',
+  'AIGC应用'
+];
 
 // === 工具函数 ===
 
@@ -26,6 +45,19 @@ async function fetchRss(url) {
     throw new Error(`Fetch RSS failed: ${url} status=${res.status}`);
   }
   return res.text();
+}
+
+function getFirstText(value, fallback = '') {
+  if (value === undefined || value === null) return fallback;
+  if (Array.isArray(value)) {
+    if (value.length === 0) return fallback;
+    return getFirstText(value[0], fallback);
+  }
+  if (typeof value === 'object') {
+    if (typeof value._ === 'string') return value._;
+    return fallback;
+  }
+  return String(value);
 }
 
 function isAiRelated(title = '', description = '') {
@@ -38,7 +70,15 @@ function isAiRelated(title = '', description = '') {
     '大模型',
     'Agent',
     '智能体',
-    '生成式AI'
+    '生成式AI',
+    'AIGC',
+    'LLM',
+    'GPT',
+    '机器学习',
+    'DeepSeek',
+    '文心',
+    '通义',
+    'Claude'
   ];
   const t = String(title).toLowerCase();
   const d = String(description).toLowerCase();
@@ -58,42 +98,136 @@ function formatDate(dateString) {
   }
 }
 
-async function parseRss(xmlText, region) {
+function normalizeLink(link = '') {
+  return String(link || '').trim().replace(/\/+$/, '');
+}
+
+function toSafeDate(rawDate) {
+  const d = new Date(rawDate);
+  if (isNaN(d.getTime())) return null;
+  return d;
+}
+
+function getNewsKey(news) {
+  const source = news && news.source ? String(news.source).trim() : 'unknown';
+  const link = normalizeLink(news && news.link ? news.link : '');
+  if (link) return `${source}|${link}`;
+  const title = news && news.title ? String(news.title).trim() : '';
+  const rawDate = news && (news.rawDate || news.date) ? String(news.rawDate || news.date).trim() : '';
+  return `${source}|${title}|${rawDate}`;
+}
+
+function hashStringToInt(input = '') {
+  let hash = 0;
+  for (let i = 0; i < input.length; i += 1) {
+    hash = ((hash << 5) - hash) + input.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
+function isWithinLastDays(news, days) {
+  const now = new Date();
+  const d = toSafeDate(news.rawDate || news.date);
+  if (!d) return false;
+  const diffDays = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+  return diffDays >= 0 && diffDays <= days;
+}
+
+function loadNewsHistory() {
+  if (!fs.existsSync(HISTORY_FILE)) return [];
+  try {
+    const text = fs.readFileSync(HISTORY_FILE, 'utf8');
+    const parsed = JSON.parse(text);
+    if (Array.isArray(parsed)) return parsed;
+    if (parsed && Array.isArray(parsed.items)) return parsed.items;
+    return [];
+  } catch (e) {
+    console.warn('[AI Dashboard] 读取 news_history.json 失败，将忽略历史文件：', e.message);
+    return [];
+  }
+}
+
+function sortByDateDesc(items) {
+  return [...items].sort((a, b) => {
+    const da = toSafeDate(a.rawDate || a.date);
+    const db = toSafeDate(b.rawDate || b.date);
+    const ta = da ? da.getTime() : 0;
+    const tb = db ? db.getTime() : 0;
+    return tb - ta;
+  });
+}
+
+function mergeNewsPool(historyItems, latestItems) {
+  const pool = new Map();
+  for (const item of historyItems) {
+    if (!item) continue;
+    pool.set(getNewsKey(item), item);
+  }
+  for (const item of latestItems) {
+    if (!item) continue;
+    const key = getNewsKey(item);
+    const old = pool.get(key);
+    if (!old) {
+      pool.set(key, item);
+      continue;
+    }
+    // 同一条新闻优先保留新抓取字段（摘要/洞察可能更完整）
+    pool.set(key, { ...old, ...item });
+  }
+  const merged = Array.from(pool.values()).filter((n) => isWithinLastDays(n, HISTORY_KEEP_DAYS));
+  return sortByDateDesc(merged);
+}
+
+function saveNewsHistory(items) {
+  const payload = {
+    updatedAt: new Date().toISOString(),
+    keepDays: HISTORY_KEEP_DAYS,
+    count: items.length,
+    items
+  };
+  fs.writeFileSync(HISTORY_FILE, JSON.stringify(payload, null, 2), 'utf8');
+}
+
+async function parseRss(xmlText, region, sourceName, idStart) {
   const xml = await parseStringPromise(xmlText);
   const items = xml.rss && xml.rss.channel && xml.rss.channel[0].item ? xml.rss.channel[0].item : [];
 
   const newsItems = [];
-  let idCounter = region === '国内' ? 2000 : 1000;
+  let idCounter = idStart;
 
   for (const item of items) {
-    const title = item.title ? item.title[0] : '';
-    const link = item.link ? item.link[0] : '#';
-    const pubDate = item.pubDate ? item.pubDate[0] : new Date().toISOString();
-    const description = item.description ? item.description[0] : '';
+    const title = getFirstText(item.title, '');
+    const link = getFirstText(item.link, '#');
+    const pubDate = getFirstText(item.pubDate, new Date().toISOString());
+    const description = getFirstText(item.description, '');
 
     if (!isAiRelated(title, description)) continue;
 
     const summary = cleanHtmlSummary(description);
-    const businessScore = 70 + Math.floor(Math.random() * 25);
 
     const tags = {
       domain: getDomainTags(title, description),
       region: [region],
       type: getTypeTags(title),
-      importance: Math.random() > 0.7 ? '高' : Math.random() > 0.5 ? '中' : '低'
+      importance: '中'
     };
 
+    const stableId = hashStringToInt(`${sourceName}|${normalizeLink(link)}`) || idCounter++;
     newsItems.push({
-      id: idCounter++,
+      id: stableId,
       title,
       summary,
-      insight: generateInsight(title, region), // 先生成一个本地兜底版，后面再用大模型覆盖
+      insight: '',
+      insightStatus: 'pending',
+      insightError: null,
       link,
       date: formatDate(pubDate),
       rawDate: pubDate,
-      source: region === '国内' ? '36kr.com' : 'TechCrunch',
+      source: sourceName,
       tags,
-      businessScore,
+      businessScore: 0,
+      deepAnalysis: '',
       funding: null,
       coreTech: extractCoreTech(description)
     });
@@ -136,41 +270,56 @@ function generateInsight(title, region) {
   return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
-// 使用 DeepSeek 为单条新闻生成 1-2 句精准提炼/商业洞察
-async function generateInsightWithLlm(news) {
-  if (!DEEPSEEK_API_KEY) return news.insight;
+function scoreToImportance(score) {
+  if (score >= 85) return '高';
+  if (score >= 78) return '中';
+  return '低';
+}
 
-  const rolePrefix = news.tags && news.tags.region && news.tags.region.includes('国内')
-    ? '你是一个深耕中国AI产业十几年的商业分析顾问团队，'
-    : 'You are a senior AI industry strategy consultant team, ';
+function normalizeScore(score) {
+  if (!Number.isFinite(score)) return 0;
+  const rounded = Math.round(score);
+  if (rounded < 0) return 0;
+  if (rounded > 100) return 100;
+  return rounded;
+}
 
-  const prompt = `
-${rolePrefix}长期为大型科技公司和投资机构提供决策支持。
+function normalizeNewsScoreAndImportance(newsList) {
+  for (const news of newsList) {
+    const normalizedScore = normalizeScore(Number(news.businessScore));
+    news.businessScore = normalizedScore;
+    if (!news.tags || typeof news.tags !== 'object') news.tags = {};
+    news.tags.importance = scoreToImportance(normalizedScore);
+    if (typeof news.deepAnalysis !== 'string') news.deepAnalysis = '';
+  }
+}
 
-请阅读下面这条新闻的「标题 + 概要」，并基于这条新闻本身，给出**两句高度凝练的中文商业洞察**。
-格式要求（非常重要）：
-1. 固定输出两句，不多不少。
-   - 第一句：用一句话极简描述这条新闻的核心事件 / 变化（发生了什么）。
-   - 第二句：用一句话点出此事件对产业链关键角色的商业或行业价值（机会或风险），说明「对谁」「有什么影响」。
-2. 总字数建议控制在 40~80 字之间，避免空洞形容词和套话。
-3. 不要出现“本文”“这条新闻”“该报道”等指代词，直接陈述事实和判断。
-4. 不要自带任何前缀标签，如“AI商业洞察：”“总结：”“TL;DR：”，只输出两句话的正文内容。
-5. 只返回中文内容，不要解释，不要添加项目符号、序号或换行标题。
+function classifyPipelineError(message = '') {
+  const msg = String(message || '').toLowerCase();
+  if (msg.includes('未配置 deepseek_api_key')) return 'NO_API_KEY';
+  if (msg.includes('401') || msg.includes('403') || msg.includes('auth') || msg.includes('api key')) return 'API_AUTH';
+  if (msg.includes('429')) return 'API_RATE_LIMIT';
+  if (/5\d\d/.test(msg)) return 'API_SERVER';
+  if (msg.includes('timeout') || msg.includes('timed out') || msg.includes('etimedout')) return 'NETWORK_TIMEOUT';
+  if (msg.includes('enotfound') || msg.includes('eai_again') || msg.includes('econnreset') || msg.includes('econnrefused') || msg.includes('network')) return 'NETWORK_ERROR';
+  if (msg.includes('解析') || msg.includes('json') || msg.includes('字段缺失') || msg.includes('coretech') || msg.includes('score') || msg.includes('格式')) return 'PARSE_ERROR';
+  if (msg.includes('rss')) return 'RSS_FETCH_ERROR';
+  return 'UNKNOWN';
+}
 
-【新闻标题】
-${news.title}
+function addErrorCount(counter, code) {
+  counter[code] = (counter[code] || 0) + 1;
+}
 
-【新闻概要】
-${news.summary}
-`;
+async function callDeepSeek(messages, temperature = 0.4) {
+  if (!DEEPSEEK_API_KEY) {
+    return { ok: false, error: '未配置 DEEPSEEK_API_KEY' };
+  }
 
   const body = {
     model: DEEPSEEK_MODEL,
-    messages: [
-      { role: 'system', content: '你是一支具有十多年咨询经验、专注AI与科技行业的商业分析团队。' },
-      { role: 'user', content: prompt }
-    ],
-    temperature: 0.5
+    messages,
+    temperature
   };
 
   try {
@@ -184,8 +333,7 @@ ${news.summary}
     });
 
     if (!res.ok) {
-      console.warn('DeepSeek 单条新闻洞察生成失败，保持原 insight。status=', res.status);
-      return news.insight;
+      return { ok: false, error: `DeepSeek HTTP ${res.status}` };
     }
 
     const data = await res.json();
@@ -195,26 +343,135 @@ ${news.summary}
       data.choices[0].message &&
       data.choices[0].message.content;
 
-    if (!content) return news.insight;
-
-    // 前缀标签由前端标题负责，这里只返回两句正文（核心内容 + 行业价值）
-    return content.trim();
+    if (!content) return { ok: false, error: 'DeepSeek 返回空内容' };
+    return { ok: true, content: content.trim() };
   } catch (e) {
-    console.warn('调用 DeepSeek 生成单条新闻洞察异常，保持原 insight。', e.message);
-    return news.insight;
+    return { ok: false, error: e.message || '调用异常' };
   }
+}
+
+async function generateInsightWithLlm(news) {
+  const rolePrefix = news.tags && news.tags.region && news.tags.region.includes('国内')
+    ? '你是一个深耕中国AI产业十几年的商业分析顾问团队，'
+    : 'You are a senior AI industry strategy consultant team, ';
+  const prompt = `
+${rolePrefix}长期为大型科技公司和投资机构提供决策支持。
+
+请阅读下面这条新闻的「标题 + 概要」，输出两句中文商业洞察：
+1) 第一句：核心事件/变化（发生了什么）。
+2) 第二句：该事件对产业链关键角色的商业价值或风险（对谁 + 有何影响）。
+
+要求：
+- 总字数 40~80 字；
+- 只输出两句话正文，不要标签、序号、解释。
+
+【新闻标题】
+${news.title}
+
+【新闻概要】
+${news.summary}
+`;
+  const result = await callDeepSeek(
+    [
+      { role: 'system', content: '你是一支具有十多年咨询经验、专注AI与科技行业的商业分析团队。' },
+      { role: 'user', content: prompt }
+    ],
+    0.5
+  );
+  if (!result.ok) return result;
+  if (!result.content) return { ok: false, error: '洞察返回为空' };
+  return { ok: true, content: result.content };
+}
+
+async function generateScoreWithLlm(news) {
+  const termText = CORE_TECH_TERMS.map((t) => `- ${t}`).join('\n');
+  const prompt = `
+请基于这条 AI 新闻输出两个字段：
+1) 商业潜力评分 score（1~100整数）
+2) 核心技术 coreTech（必须从词条中选一个）
+
+评分规则：
+- 1 到 100 的整数；
+- 85-100 为高，78-84 为中，0-77 为低。
+
+可选核心技术词条（只能选其一）：
+${termText}
+
+请严格按以下 JSON 返回，不要任何其他文字：
+{"score":85,"coreTech":"多模态"}
+
+【新闻标题】
+${news.title}
+
+【新闻概要】
+${news.summary}
+`;
+  const result = await callDeepSeek(
+    [
+      { role: 'system', content: '你是资深AI行业商业分析师。' },
+      { role: 'user', content: prompt }
+    ],
+    0.2
+  );
+  if (!result.ok) return result;
+  let parsed;
+  try {
+    parsed = JSON.parse(result.content);
+  } catch {
+    return { ok: false, error: `评分/核心技术解析失败: ${result.content.slice(0, 80)}` };
+  }
+  if (typeof parsed.score !== 'number' || typeof parsed.coreTech !== 'string') {
+    return { ok: false, error: '评分/核心技术字段缺失' };
+  }
+  const score = normalizeScore(parsed.score);
+  const coreTech = parsed.coreTech.trim();
+  if (!CORE_TECH_TERMS.includes(coreTech)) {
+    return { ok: false, error: `核心技术不在词条中: ${coreTech}` };
+  }
+  return { ok: true, score, coreTech };
+}
+
+async function generateDeepAnalysisWithLlm(news, score) {
+  const prompt = `
+请基于这条 AI 新闻和评分结果，输出 2-3 句中文“深入分析”。
+
+要求：
+- 站在顶尖咨询师视角；
+- 结合评分 ${score} 解释其行业含义；
+- 给出趋势/竞争格局/投资或战略启示；
+- 只输出正文，不要标题和前缀标签。
+
+【新闻标题】
+${news.title}
+
+【新闻概要】
+${news.summary}
+`;
+  const result = await callDeepSeek(
+    [
+      { role: 'system', content: '你是顶尖咨询公司的AI行业合伙人。' },
+      { role: 'user', content: prompt }
+    ],
+    0.45
+  );
+  if (!result.ok) return result;
+  if (!result.content) return { ok: false, error: '深入分析返回为空' };
+  return { ok: true, content: result.content };
 }
 
 function extractCoreTech(description) {
   const desc = description.toLowerCase();
-  if (desc.includes('自然语言') || desc.includes('nlp')) return '自然语言处理';
-  if (desc.includes('计算机视觉') || desc.includes('cv')) return '计算机视觉';
-  if (desc.includes('强化学习')) return '强化学习';
-  if (desc.includes('生成') || desc.includes('generative')) return '生成模型';
-  if (desc.includes('多模态')) return '多模态学习';
-  if (desc.includes('深度')) return '深度学习';
-  const techs = ['深度学习', '神经网络', '自然语言处理', '计算机视觉', '强化学习', '生成模型', '多模态学习'];
-  return techs[Math.floor(Math.random() * techs.length)];
+  if (desc.includes('agent') || desc.includes('智能体')) return '智能体';
+  if (desc.includes('rag') || desc.includes('检索增强')) return '检索增强生成(RAG)';
+  if (desc.includes('多模态')) return '多模态';
+  if (desc.includes('视觉') || desc.includes('cv')) return '计算机视觉';
+  if (desc.includes('语音') || desc.includes('音频')) return '语音与音频';
+  if (desc.includes('机器人') || desc.includes('具身')) return '具身智能/机器人';
+  if (desc.includes('安全') || desc.includes('对齐')) return 'AI安全与对齐';
+  if (desc.includes('infra') || desc.includes('算力') || desc.includes('芯片')) return 'AI基础设施';
+  if (desc.includes('推荐')) return '推荐系统';
+  if (desc.includes('大模型') || desc.includes('llm') || desc.includes('gpt')) return '大语言模型';
+  return 'AIGC应用';
 }
 
 function bucketByTime(allNews) {
@@ -242,21 +499,82 @@ function bucketByTime(allNews) {
   return { today, yesterday, week, month };
 }
 
-// 批量为新闻补充/覆盖 DeepSeek 生成的洞察（为控制调用次数，只处理前 N 条）
-async function enrichInsightsWithLlm(allNews, maxItems = 30) {
-  if (!DEEPSEEK_API_KEY) return;
-
-  const targets = allNews.slice(0, maxItems);
-
-  for (const news of targets) {
-    news.insight = await generateInsightWithLlm(news);
+function dedupeById(newsList) {
+  const seen = new Set();
+  const result = [];
+  for (const n of newsList) {
+    if (!n) continue;
+    const key = getNewsKey(n);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(n);
   }
+  return result;
+}
+
+// 全量为“计划上网页”的新闻生成提炼；单条失败不拖垮全局
+async function enrichInsightsWithLlm(allNews) {
+  if (!DEEPSEEK_API_KEY) {
+    throw new Error('未配置 DEEPSEEK_API_KEY');
+  }
+
+  const failed = [];
+  const errorByType = {};
+  const successNews = [];
+  for (const news of allNews) {
+    const insightResult = await generateInsightWithLlm(news);
+    const scoreResult = insightResult.ok ? await generateScoreWithLlm(news) : { ok: false, error: '洞察失败，评分/核心技术未执行' };
+    const deepResult = scoreResult.ok ? await generateDeepAnalysisWithLlm(news, scoreResult.score) : { ok: false, error: '评分失败，深度分析未执行' };
+
+    if (insightResult.ok && scoreResult.ok && deepResult.ok) {
+      news.insight = insightResult.content;
+      news.businessScore = scoreResult.score;
+      news.coreTech = scoreResult.coreTech;
+      news.deepAnalysis = deepResult.content;
+      news.tags.importance = scoreToImportance(scoreResult.score);
+      news.insightStatus = 'ok';
+      news.insightError = null;
+      console.log(`[AI Dashboard][LLM OK] ${news.source} | ${news.title.slice(0, 36)} | score=${news.businessScore} | importance=${news.tags.importance} | coreTech=${news.coreTech}`);
+      successNews.push(news);
+    } else {
+      news.insight = '未调用成功';
+      news.insightStatus = 'failed';
+      news.deepAnalysis = '';
+      news.businessScore = 0;
+      news.tags.importance = '低';
+      const stageError = [
+        !insightResult.ok ? `洞察失败: ${insightResult.error}` : null,
+        !scoreResult.ok ? `评分/核心技术失败: ${scoreResult.error}` : null,
+        !deepResult.ok ? `深度分析失败: ${deepResult.error}` : null
+      ].filter(Boolean).join(' | ');
+      news.insightError = stageError || '调用失败';
+      const errorType = classifyPipelineError(news.insightError);
+      addErrorCount(errorByType, errorType);
+      failed.push({
+        source: news.source,
+        title: news.title.slice(0, 80),
+        errorType,
+        errorDetail: news.insightError
+      });
+    }
+  }
+
+  if (successNews.length === 0) {
+    throw new Error(`全部新闻调用失败 ${failed.length}/${allNews.length}`);
+  }
+  return {
+    successNews,
+    failedNews: failed,
+    failedCount: failed.length,
+    successCount: successNews.length,
+    totalCount: allNews.length,
+    errorByType
+  };
 }
 
 async function callLlmForAnalysis(allNews, buckets) {
   if (!DEEPSEEK_API_KEY) {
-    console.warn('未设置 DEEPSEEK_API_KEY（或 OPENAI_API_KEY），跳过大模型分析，前端将使用内置统计分析。');
-    return null;
+    throw new Error('未配置 DEEPSEEK_API_KEY');
   }
 
   const total = allNews.length;
@@ -264,8 +582,7 @@ async function callLlmForAnalysis(allNews, buckets) {
   const overseas = allNews.filter((n) => n.tags.region.includes('海外')).length;
 
   const sampleNews = allNews
-    .slice(0, 30)
-    .map((n) => `- [${n.tags.region.join('/')}] ${n.date} | ${n.title} (${n.source})`)
+    .map((n) => `- [${n.tags.region.join('/')}] ${n.date} | ${n.title} (${n.source}) | 链接: ${n.link} | 摘要: ${(n.summary || '').slice(0, 140)}`)
     .join('\n');
 
   const prompt = `
@@ -301,7 +618,7 @@ async function callLlmForAnalysis(allNews, buckets) {
 - 国内新闻条数：${domestic}
 - 海外新闻条数：${overseas}
 
-【部分新闻样本】（仅供你判断趋势，不必一条条复述）：
+【计划上网页的全部新闻样本 + 链接】（请完整阅读后再判断趋势）：
 ${sampleNews}
 `;
 
@@ -333,55 +650,119 @@ ${sampleNews}
 }
 
 async function main() {
-  console.log('[AI Dashboard] 开始抓取 36kr 和 TechCrunch RSS...');
+  console.log('[AI Dashboard] 开始抓取 RSS 源（36kr / InfoQ CN / 雷峰网 / TechCrunch / VentureBeat AI / ZDNet AI）...');
+  const sourceConfigs = [
+    { url: TECHCRUNCH_RSS, region: '海外', sourceName: 'TechCrunch', idStart: 1000 },
+    { url: VENTUREBEAT_AI_RSS, region: '海外', sourceName: 'VentureBeat', idStart: 1300 },
+    { url: ZDNET_AI_RSS, region: '海外', sourceName: 'ZDNet AI', idStart: 1600 },
+    { url: KR36_RSS, region: '国内', sourceName: '36kr.com', idStart: 2000 },
+    { url: INFOQ_CN_RSS, region: '国内', sourceName: 'InfoQ CN', idStart: 2300 },
+    { url: LEIPHONE_RSS, region: '国内', sourceName: '雷峰网', idStart: 2600 }
+  ];
+
+  const errorByType = {};
+  const sampleErrors = [];
+
+  const rssResults = await Promise.allSettled(sourceConfigs.map((s) => fetchRss(s.url)));
+  const xmlBySource = [];
+  rssResults.forEach((r, idx) => {
+    const source = sourceConfigs[idx];
+    if (r.status === 'fulfilled') {
+      xmlBySource.push({ ...source, xmlText: r.value });
+    } else {
+      const msg = `RSS抓取失败: ${source.sourceName} | ${r.reason && r.reason.message ? r.reason.message : String(r.reason)}`;
+      const type = classifyPipelineError(msg);
+      addErrorCount(errorByType, type);
+      sampleErrors.push(msg);
+    }
+  });
+  console.log(`[AI Dashboard] RSS 获取成功：${xmlBySource.length}/${sourceConfigs.length} 个源，开始解析...`);
+  if (xmlBySource.length === 0) throw new Error('全部 RSS 源抓取失败');
+
+  const parseResults = await Promise.allSettled(
+    xmlBySource.map((s) => parseRss(s.xmlText, s.region, s.sourceName, s.idStart))
+  );
+  const allNews = [];
+  parseResults.forEach((r, idx) => {
+    if (r.status === 'fulfilled') {
+      allNews.push(...r.value);
+    } else {
+      const source = xmlBySource[idx];
+      const msg = `RSS解析失败: ${source.sourceName} | ${r.reason && r.reason.message ? r.reason.message : String(r.reason)}`;
+      const type = classifyPipelineError(msg);
+      addErrorCount(errorByType, type);
+      sampleErrors.push(msg);
+    }
+  });
+
+  // 与历史池合并，保留最近 30 天，避免仅靠当天 RSS 导致 week/month 过空
+  const historyItems = loadNewsHistory();
+  const mergedRecentNews = mergeNewsPool(historyItems, allNews);
+  console.log(`[AI Dashboard] 历史池已更新：历史 ${historyItems.length} + 当次 ${allNews.length} => 最近30天 ${mergedRecentNews.length}`);
+  if (mergedRecentNews.length === 0) throw new Error('抓取完成但无可用新闻数据（历史池与当次抓取均为空）');
+
+  const enrichResult = await enrichInsightsWithLlm(mergedRecentNews);
+  Object.entries(enrichResult.errorByType).forEach(([k, v]) => {
+    errorByType[k] = (errorByType[k] || 0) + v;
+  });
+  enrichResult.failedNews.slice(0, 10).forEach((e) => {
+    sampleErrors.push(`${e.source} | ${e.title} | ${e.errorType} | ${e.errorDetail}`);
+  });
+
+  const successfulNews = enrichResult.successNews;
+  normalizeNewsScoreAndImportance(successfulNews);
+  const buckets = bucketByTime(successfulNews);
+
+  let analysisHtml = null;
+  let analysisStatus = 'ok';
+  let analysisError = null;
   try {
-    const [tcXml, krXml] = await Promise.all([fetchRss(TECHCRUNCH_RSS), fetchRss(KR36_RSS)]);
-    console.log('[AI Dashboard] RSS 获取成功，开始解析...');
-
-    const [tcNews, krNews] = await Promise.all([parseRss(tcXml, '海外'), parseRss(krXml, '国内')]);
-    const allNews = [...tcNews, ...krNews];
-
-    if (allNews.length === 0) {
-      console.warn('[AI Dashboard] 未从 RSS 中解析到 AI 相关新闻，保持现有数据不变。');
-      return;
-    }
-
-    // 先按时间分桶
-    const buckets = bucketByTime(allNews);
-
-    // 使用 DeepSeek 为部分新闻生成更精准的提炼/商业洞察（会覆盖默认 insight）
-    try {
-      await enrichInsightsWithLlm(allNews);
-    } catch (e) {
-      console.warn('[AI Dashboard] 使用 DeepSeek 生成逐条新闻洞察时出错，将保留默认 insight：', e.message);
-    }
-
-    console.log('[AI Dashboard] 调用大模型生成分析文案（如果配置了 OPENAI_API_KEY）...');
-    let analysisHtml = null;
-    try {
-      analysisHtml = await callLlmForAnalysis(allNews, buckets);
-    } catch (e) {
-      console.error('[AI Dashboard] 调用大模型失败，将在前端使用本地统计分析：', e.message);
-    }
-
-    const output = {
-      generatedAt: new Date().toISOString(),
-      newsBuckets: buckets,
-      analysisHtml: analysisHtml
-    };
-
-    const outPath = path.join(__dirname, 'daily_ai_dashboard.json');
-    fs.writeFileSync(outPath, JSON.stringify(output, null, 2), 'utf8');
-
-    console.log('[AI Dashboard] 已生成 daily_ai_dashboard.json，可供前端页面使用。');
+    console.log('[AI Dashboard] 调用大模型生成分析文案（全量成功新闻+链接）...');
+    analysisHtml = await callLlmForAnalysis(successfulNews, buckets);
+    if (!analysisHtml) throw new Error('AI Trends Analysis 生成失败：未返回有效内容');
   } catch (e) {
-    console.error('[AI Dashboard] 生成失败：', e);
-    process.exitCode = 1;
+    analysisStatus = 'failed';
+    analysisError = e.message || String(e);
+    const type = classifyPipelineError(analysisError);
+    addErrorCount(errorByType, type);
+    sampleErrors.push(`BA Insights 失败 | ${analysisError}`);
   }
+
+  // 只持久化成功新闻，避免失败条目污染历史池
+  saveNewsHistory(successfulNews);
+
+  const totalFailures = (sourceConfigs.length - xmlBySource.length) + (parseResults.length - parseResults.filter((r) => r.status === 'fulfilled').length) + enrichResult.failedCount + (analysisStatus === 'failed' ? 1 : 0);
+  const refreshSummary = {
+    totalCandidates: mergedRecentNews.length,
+    successCount: successfulNews.length,
+    failedCount: totalFailures,
+    llmFailedNewsCount: enrichResult.failedCount,
+    errorByType,
+    sampleErrors: sampleErrors.slice(0, 12)
+  };
+  const pipelineStatus = totalFailures > 0 ? 'partial' : 'ok';
+
+  const output = {
+    generatedAt: new Date().toISOString(),
+    pipelineStatus,
+    refreshSummary,
+    newsBuckets: buckets,
+    analysisHtml,
+    analysisStatus,
+    analysisError
+  };
+
+  const outPath = path.join(__dirname, 'daily_ai_dashboard.json');
+  fs.writeFileSync(outPath, JSON.stringify(output, null, 2), 'utf8');
+  console.log(`[AI Dashboard] 已生成 daily_ai_dashboard.json。成功新闻 ${successfulNews.length}，问题条目 ${totalFailures}`);
+  return { ok: true, pipelineStatus, refreshSummary };
 }
 
 if (require.main === module) {
-  main();
+  main().catch((e) => {
+    console.error('[AI Dashboard] 生成失败：', e);
+    process.exitCode = 1;
+  });
 }
 
 // 导出 main，供 server.js / 其他模块调用

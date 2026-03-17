@@ -8,6 +8,12 @@ const newsData = {
     month: []
 };
 
+// 前端可配置后端地址（用于 GitHub Pages 等静态托管场景）
+// 本地运行时留空即可（同源 / 相对路径）。
+const DASHBOARD_BACKEND = (typeof window !== 'undefined' && window.__DASHBOARD_BACKEND__)
+    ? String(window.__DASHBOARD_BACKEND__).replace(/\/+$/, '')
+    : '';
+
 // 渲染标签
 function renderTags(tags) {
     let html = '<div class="news-tags">';
@@ -81,6 +87,30 @@ let currentFilters = {
     region: [],
     importance: []
 };
+
+function buildRefreshIssueMessage(refreshSummary, analysisStatus, analysisError) {
+    const issues = [];
+    if (refreshSummary && typeof refreshSummary === 'object') {
+        const failedCount = Number(refreshSummary.failedCount || 0);
+        const successCount = Number(refreshSummary.successCount || 0);
+        if (failedCount > 0) {
+            issues.push(`本次刷新已展示成功新闻 ${successCount} 条，存在问题条目 ${failedCount} 条。`);
+        }
+        if (refreshSummary.errorByType && typeof refreshSummary.errorByType === 'object') {
+            const byTypeText = Object.entries(refreshSummary.errorByType)
+                .map(([k, v]) => `${k}:${v}`)
+                .join('，');
+            if (byTypeText) issues.push(`错误分类：${byTypeText}`);
+        }
+        if (Array.isArray(refreshSummary.sampleErrors) && refreshSummary.sampleErrors.length > 0) {
+            issues.push(`示例：${refreshSummary.sampleErrors.slice(0, 3).join(' | ')}`);
+        }
+    }
+    if (analysisStatus === 'failed') {
+        issues.push(`BA Insights 失败：${analysisError || '未知错误'}`);
+    }
+    return issues.join('\n');
+}
 
 // 应用筛选条件
 function applyFilters(newsItems) {
@@ -189,13 +219,15 @@ function renderNewsList(timeframe) {
             html += renderTags(news.tags);
         }
 
-        // AI洞察
-        if (news.insight) {
-            html += `<div class="insight-box">`;
-            html += `<div class="insight-title">${news.insight.includes('💡') ? '💡 AI商业洞察' : '🤖 一句话提炼'}</div>`;
+        // AI洞察：仅当 DeepSeek 调用成功才显示正文，否则明确提示未调用成功
+        html += `<div class="insight-box">`;
+        html += `<div class="insight-title">🤖 一句话提炼</div>`;
+        if (news.insightStatus === 'ok' && news.insight) {
             html += `<p>${news.insight.replace('💡 AI Insight:', '').replace('🤖 TL;DR:', '').trim()}</p>`;
-            html += `</div>`;
+        } else {
+            html += `<p>未调用成功</p>`;
         }
+        html += `</div>`;
 
         // 摘要
         html += `<p class="news-summary">${news.summary}</p>`;
@@ -253,12 +285,12 @@ function updateStats(timeframe, count) {
 function calculateTrends() {
     const allNews = [...newsData.today, ...newsData.yesterday, ...newsData.week, ...newsData.month];
 
-    // 计算商业潜力分布
+    // 计算商业潜力分布（与 importance 映射一致：>=85 高，78-84 中，<78 低）
     const scores = {
-        high: allNews.filter(n => n.businessScore >= 90).length,
-        medium: allNews.filter(n => n.businessScore >= 80 && n.businessScore < 90).length,
-        low: allNews.filter(n => n.businessScore >= 70 && n.businessScore < 80).length,
-        veryLow: allNews.filter(n => n.businessScore < 70).length
+        high: allNews.filter(n => n.businessScore >= 85).length,
+        medium: allNews.filter(n => n.businessScore >= 78 && n.businessScore < 85).length,
+        low: allNews.filter(n => n.businessScore < 78).length,
+        veryLow: 0
     };
 
     // 计算领域分布
@@ -419,7 +451,8 @@ function showNewsDetail(newsId) {
                 ${news.coreTech ? renderCoreTech(news.coreTech) : ''}
                 <div class="detail-analysis">
                     <h3>深入分析</h3>
-                    <p>基于此新闻的商业潜力评分：<strong>${news.businessScore}%</strong>。这表示该新闻在AI产业中的商业影响力和市场潜力较高，值得投资者和行业从业者关注。</p>
+                    <p class="analysis-score">商业潜力评分：<strong>${news.businessScore}%</strong></p>
+                    ${news.deepAnalysis ? `<p class="analysis-text">${news.deepAnalysis}</p>` : ''}
                 </div>
                 <a href="${news.link}" target="_blank" class="detail-link">
                     <i class="fas fa-external-link-alt"></i> 阅读原文报道
@@ -520,28 +553,28 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         let analysisHtmlFromJson = null;
+        let analysisErrorFromJson = null;
         let loadedFromJson = false;
 
-        // 尝试读取后端每日生成的 JSON（如果存在则直接使用）
+        // 尝试读取后端每日生成的 JSON
         try {
-            const res = await fetch('daily_ai_dashboard.json', { cache: 'no-store' });
+            const res = await fetch(`${DASHBOARD_BACKEND}/daily_ai_dashboard.json`, { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
-                if (data.newsBuckets) {
-                    // 即使是空数组也要覆盖，避免 Past Month 保留旧的模拟数据
-                    newsData.today = Array.isArray(data.newsBuckets.today) ? data.newsBuckets.today : [];
-                    newsData.yesterday = Array.isArray(data.newsBuckets.yesterday) ? data.newsBuckets.yesterday : [];
-                    newsData.week = Array.isArray(data.newsBuckets.week) ? data.newsBuckets.week : [];
-                    newsData.month = Array.isArray(data.newsBuckets.month) ? data.newsBuckets.month : [];
-                    loadedFromJson = true;
-                }
+                // 即使是空数组也要覆盖，避免 Past Month 保留旧的模拟数据
+                newsData.today = Array.isArray(data.newsBuckets.today) ? data.newsBuckets.today : [];
+                newsData.yesterday = Array.isArray(data.newsBuckets.yesterday) ? data.newsBuckets.yesterday : [];
+                newsData.week = Array.isArray(data.newsBuckets.week) ? data.newsBuckets.week : [];
+                newsData.month = Array.isArray(data.newsBuckets.month) ? data.newsBuckets.month : [];
+                loadedFromJson = true;
                 if (data.analysisHtml) {
                     analysisHtmlFromJson = data.analysisHtml;
                 }
-                console.log('已从 daily_ai_dashboard.json 加载最新新闻与分析数据。');
+                analysisErrorFromJson = data.analysisError || null;
+                console.log(`已从 daily_ai_dashboard.json 加载最新新闻与分析数据。来源: ${DASHBOARD_BACKEND || 'same-origin'}`);
             }
         } catch (e) {
-            console.warn('读取 daily_ai_dashboard.json 失败，将在前端直接抓取 RSS:', e);
+            console.warn('读取 daily_ai_dashboard.json 失败：', e);
         }
 
         // 默认激活 Today 时间段（此时已应用默认地域筛选）
@@ -552,7 +585,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCharts();
 
         // 更新右侧分析内容：优先用后端大模型生成的 HTML，没有则用本地统计分析
-        updateAnalysisContent(analysisHtmlFromJson);
+        updateAnalysisContent(analysisHtmlFromJson, analysisErrorFromJson);
 
         // 更新时间线按钮事件监听（点击时才渲染对应时间段的新闻）
         document.querySelectorAll('.timeframe-btn').forEach(btn => {
@@ -568,19 +601,26 @@ document.addEventListener('DOMContentLoaded', function() {
         if (refreshBtn) {
             refreshBtn.addEventListener('click', async () => {
                 console.log('手动刷新：调用 /api/refresh-dashboard 并重新加载 daily_ai_dashboard.json');
-                const originalText = refreshBtn.textContent;
+                const btnTextEl = refreshBtn.querySelector('.btn-text');
+                const originalText = btnTextEl ? btnTextEl.textContent : refreshBtn.textContent;
                 refreshBtn.disabled = true;
-                refreshBtn.textContent = 'Refreshing...';
+                refreshBtn.classList.add('is-loading');
+                if (btnTextEl) {
+                    btnTextEl.textContent = 'Syncing...';
+                } else {
+                    refreshBtn.textContent = 'Syncing...';
+                }
                 if (refreshModal) refreshModal.setAttribute('aria-hidden', 'false');
                 try {
-                    // 1）先请求后端重新抓取 + 生成 JSON（API 在 59613 端口）
-                    const refreshRes = await fetch('/api/refresh-dashboard', { method: 'POST' });
+                    // 1）先请求后端重新抓取 + 生成 JSON
+                    const refreshRes = await fetch(`${DASHBOARD_BACKEND}/api/refresh-dashboard`, { method: 'POST' });
                     if (!refreshRes.ok) {
-                        console.warn('刷新失败：/api/refresh-dashboard 返回错误', refreshRes.status);
+                        const errText = await refreshRes.text().catch(() => '');
+                        throw new Error(`/api/refresh-dashboard 失败: ${refreshRes.status} ${errText}`);
                     }
 
                     // 2）然后读取最新 daily_ai_dashboard.json
-                    const res = await fetch('daily_ai_dashboard.json?ts=' + Date.now(), { cache: 'no-store' });
+                    const res = await fetch(`${DASHBOARD_BACKEND}/daily_ai_dashboard.json?ts=` + Date.now(), { cache: 'no-store' });
                     if (res.ok) {
                         const data = await res.json();
                         if (data.newsBuckets) {
@@ -590,21 +630,31 @@ document.addEventListener('DOMContentLoaded', function() {
                             newsData.month = Array.isArray(data.newsBuckets.month) ? data.newsBuckets.month : [];
                         }
                         // 右侧分析
-                        updateAnalysisContent(data.analysisHtml || null);
+                        updateAnalysisContent(data.analysisHtml || null, data.analysisError || null);
                         // 重新渲染当前时间段
                         const activeBtn = document.querySelector('.timeframe-btn.active');
                         const currentTimeframe = activeBtn ? activeBtn.getAttribute('data-timeframe') : 'today';
                         switchTimeline(currentTimeframe);
-                        console.log('手动刷新完成，已应用最新 daily_ai_dashboard.json');
+                        const issueMessage = buildRefreshIssueMessage(data.refreshSummary, data.analysisStatus, data.analysisError);
+                        if (issueMessage) {
+                            window.alert(`刷新完成（部分异常）\n${issueMessage}`);
+                        }
+                        console.log(`手动刷新完成，已应用最新 daily_ai_dashboard.json。来源: ${DASHBOARD_BACKEND || 'same-origin'}`);
                     } else {
-                        console.warn('刷新失败：无法读取 daily_ai_dashboard.json，status=', res.status);
+                        throw new Error(`刷新失败：无法读取 daily_ai_dashboard.json，status=${res.status}`);
                     }
                 } catch (e) {
                     console.error('刷新失败：', e);
+                    window.alert(`刷新失败：${e.message || e}\n请查看后端控制台日志定位具体报错。`);
                 } finally {
                     if (refreshModal) refreshModal.setAttribute('aria-hidden', 'true');
                     refreshBtn.disabled = false;
-                    refreshBtn.textContent = originalText;
+                    refreshBtn.classList.remove('is-loading');
+                    if (btnTextEl) {
+                        btnTextEl.textContent = originalText;
+                    } else {
+                        refreshBtn.textContent = originalText;
+                    }
                 }
             });
         }
@@ -734,15 +784,16 @@ function parseRSS(xmlText, region) {
             // 提取摘要（清理HTML标签）
             const summary = description.replace(/<[^>]*>/g, '').substring(0, 200) + '...';
 
-            // 生成商业评分（模拟）
+            // 生成商业评分（模拟），importance 由 score 映射：>=85 高，78-84 中，<78 低
             const businessScore = 70 + Math.floor(Math.random() * 25);
+            const importance = businessScore >= 85 ? '高' : businessScore >= 78 ? '中' : '低';
 
             // 生成标签
             const tags = {
                 domain: getDomainTags(title, description),
                 region: [region],
                 type: getTypeTags(title),
-                importance: Math.random() > 0.7 ? '高' : (Math.random() > 0.5 ? '中' : '低')
+                importance
             };
 
             // 生成AI洞察
@@ -759,6 +810,7 @@ function parseRSS(xmlText, region) {
                 source: region === '国内' ? '36kr.com' : 'TechCrunch',
                 tags,
                 businessScore,
+                deepAnalysis: '',
                 funding: null,
                 coreTech: extractCoreTech(description)
             });
@@ -972,15 +1024,28 @@ function generateAdvancedAnalysis() {
     return analysisHTML;
 }
 
-// 更新分析内容（如果有后端生成的 analysisHtml 优先用，没有则本地统计生成）
-function updateAnalysisContent(externalHtml) {
+// 更新分析内容（仅展示后端 analysisHtml；无内容时显示失败原因，不做本地兜底）
+function updateAnalysisContent(externalHtml, externalError) {
     const analysisContainer = document.getElementById('dynamic-analysis');
     if (!analysisContainer) return;
 
     if (externalHtml) {
         analysisContainer.innerHTML = externalHtml;
     } else {
-        analysisContainer.innerHTML = generateAdvancedAnalysis();
+        analysisContainer.innerHTML = `
+            <div class="analysis-empty-state">
+                <h3><i class="fas fa-triangle-exclamation"></i> BA Insights 生成失败</h3>
+                <p>当前未获取到后端生成的分析内容（analysisHtml 为空）。</p>
+                <p>错误信息：${externalError || '后端未返回具体错误，请查看后端日志。'}</p>
+                <p>常见原因：</p>
+                <ul>
+                    <li>刷新接口 <code>/api/refresh-dashboard</code> 调用失败；</li>
+                    <li>后端调用模型失败或返回空内容；</li>
+                    <li>当前读取到旧的 <code>daily_ai_dashboard.json</code>。</li>
+                </ul>
+                <p>请查看后端控制台日志后重新刷新。</p>
+            </div>
+        `;
     }
 }
 
